@@ -1,12 +1,9 @@
-<h2>{{ _( "Deploy XX-Net onto GAE" ) }}</h2>
+<h3>{{ _( "Deploy XX-Net onto GAE" ) }}</h3>
 <div class="alert alert-info fade in">
     <p class="message">{{ _( "Current status: " ) }}{{ _( "idle" ) }}</p>
 </div> <!-- .alert -->
-<ul class="nav nav-tabs">
-    <li class="active"><a href="#authentication" data-toggle="tab">{{ _( "Authorization" ) }}</a></li>
-    <li><a href="#logs" data-toggle="tab">{{ _( "Log" ) }}</a></li>
-</ul>
-<div id="deploy" class="tab-content">
+
+<div id="deploy" class="row-fluid">
     <div id="authentication" class="tab-pane fade in active">
         <form method="POST" onSubmit="return false;">
             <div class="row-fluid">
@@ -29,15 +26,18 @@
 
             <div class="row-fluid">
                 <div class="span12">
+                    <div id="log"></div> <!-- #log -->
+                </div> <!-- .span12 -->
+            </div> <!-- .row-fluid -->
+
+            <div class="row-fluid">
+                <div class="span12">
                     <button class="btn btn-primary btn-block" type="submit">{{ _("Start to deploy") }}</button>
                 </div> <!-- .span12 -->
             </div> <!-- .row-fluid -->
         </form>
         <p class="tip">* {{ _( "Auth window will popup, make sure don't block popup in browser." ) }}</p>
     </div> <!-- #authentication -->
-    <div id="logs" class="tab-pane fade">
-        <div id="log" class="span12"></div>
-    </div> <!-- #log -->
 </div> <!-- #tab-content -->
 
 <!-- JavaScript -->
