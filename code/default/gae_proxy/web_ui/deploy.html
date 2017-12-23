@@ -4,40 +4,40 @@
 </div> <!-- .alert -->
 
 <div id="deploy" class="row-fluid">
-    <div id="authentication" class="tab-pane fade in active">
-        <form method="POST" onSubmit="return false;">
-            <div class="row-fluid">
-                <div class="span4">
-                    <label for="gae-appid">GAE AppID (<a href="https://github.com/XX-net/XX-Net/wiki/how-to-create-my-appids" target="_blank">{{ _( "How to apply" ) }}</a>)</label>
-                </div> <!-- .span4 -->
-                <div class="span8">
-                    <input id="gae-appid" type="text" placeholder='{{ _("Delimit multiple AppIDs with |") }}' />
-                </div> <!-- .span8 -->
-            </div> <!-- .row-fluid -->
+    <form method="POST" onSubmit="return false;">
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="gae-appid">GAE AppID (<a href="https://github.com/XX-net/XX-Net/wiki/how-to-create-my-appids" target="_blank">{{ _( "How to apply" ) }}</a>)</label>
+            </div> <!-- .span3 -->
+            <div class="span9">
+                <input id="gae-appid" type="text" placeholder='{{ _("Delimit multiple AppIDs with |") }}' />
+            </div> <!-- .span9 -->
+        </div> <!-- .row-fluid -->
 
-            <div class="row-fluid">
-                <div class="span4">
-                    <label for="show-debug-log">{{ _( "Show Debug Log" ) }}</label>
-                </div> <!-- .span4 -->
-                <div class="span8">
-                    <input id="show-debug-log" type="checkbox" data-toggle="switch" />
-                </div> <!-- .span8 -->
-            </div> <!-- .row-fluid -->
+        <div class="row-fluid">
+            <div class="span3">
+                <label for="show-debug-log">{{ _( "Show Debug Log" ) }}</label>
+            </div> <!-- .span3 -->
+            <div class="span9">
+                <input id="show-debug-log" type="checkbox" data-toggle="switch" />
+            </div> <!-- .span9 -->
+        </div> <!-- .row-fluid -->
 
+        <div id="logs" style="display: none;">
             <div class="row-fluid">
                 <div class="span12">
                     <div id="log"></div> <!-- #log -->
                 </div> <!-- .span12 -->
             </div> <!-- .row-fluid -->
+        </div> <!-- #logs -->
 
-            <div class="row-fluid">
-                <div class="span12">
-                    <button class="btn btn-primary btn-block" type="submit">{{ _("Start to deploy") }}</button>
-                </div> <!-- .span12 -->
-            </div> <!-- .row-fluid -->
-        </form>
-        <p class="tip">* {{ _( "Auth window will popup, make sure don't block popup in browser." ) }}</p>
-    </div> <!-- #authentication -->
+        <div class="row-fluid">
+            <div class="span12">
+                <button class="btn btn-primary btn-block" type="submit">{{ _("Start to deploy") }}</button>
+            </div> <!-- .span12 -->
+        </div> <!-- .row-fluid -->
+    </form>
+    <p class="tip">* {{ _( "Auth window will popup, make sure don't block popup in browser." ) }}</p>
 </div> <!-- #tab-content -->
 
 <!-- JavaScript -->
@@ -46,10 +46,18 @@
     $(function() {
         $('[data-toggle=switch]').wrap('<div class="switch" />').parent().bootstrapSwitch();
     });
-
-    $('#show-debug-log').parent().removeClass('switch-off');
 </script>
+<script type="text/javascript">
+    $('#show-debug-log').change(function() {
+        var isChecked = $(this).is(':checked');
 
+        if ( isChecked ) {
+            $('#logs').slideDown();
+        } else {
+            $('#logs').slideUp();
+        }
+    });
+</script>
 <script type="text/javascript">
     $(function() {
         window.status = 'init';
