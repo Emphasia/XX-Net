@@ -25,7 +25,7 @@
                 <td>{{ _( "Browser Proxy Setting" ) }}</td>
                 <td id="browser-proxy-setting"></td>
             </tr>
-            <tr id="tr_ca-status">
+            <tr>
                 <td>{{ _( "CA status" ) }}(<a href="/module/gae_proxy/control/download_cert">{{ _( "Download" ) }}</a>)</td>
                 <td id="ca-status"></td>
             </tr>
@@ -126,9 +126,7 @@
 
     <button id="pop-up-report" class="btn btn-primary">{{ _( "Diagnostic Info" ) }}</button>
     <br><br>
-    <div id="tip">
-            {{ _("Check") }} <a href="https://github.com/XX-net/XX-Net/issues">{{ _("GitHub issues") }}</a> {{ _("or")}} <a href="https://groups.google.com/forum/#!forum/xx-net">{{ _("Google Group Discussions") }}</a><br>
-    </div>
+    <div id="tip">{{ _("Check") }} <a href="https://github.com/XX-net/XX-Net/issues">{{ _("GitHub issues") }}</a> {{ _("or")}} <a href="https://groups.google.com/forum/#!forum/xx-net">{{ _("Google Group Discussions") }}</a></div>
     <br><br>
 </div> <!-- #details -->
 
@@ -267,23 +265,11 @@
                     'td#python-version': result['python_version'],
                     'td#openssl-version': result['openssl_version'],
 
-                    'td#lan-proxy': result['lan_proxy'],
-                    'td#proxy-listen': result['proxy_listen'],
-                    'td#use-ipv6': result['use_ipv6'],
-                    'td#working-appid': appid_string(result['gae_appid']),
-                    'td#out-of-quota-appids': result['out_of_quota_appids'],
-                    'td#not-exist-appids': result['not_exist_appids'],
+                    'td#lan-proxy': (result['lan_proxy'] === 'Disable') ? '{{ _( "disable" ) }}' : result['lan_proxy'],
 
-                    'td#ipv4-status': result['ipv4_state'],
-                    'td#ipv6-status': result['ipv6_state'],
-                    'td#ipv4-num': result['good_ipv4_num'],
-                    'td#ipv6-num': result['good_ipv6_num'],
                     'td#is-idle': result['is_idle'] ? '{{ _( "idle" ) }}' : '{{ _( "working" ) }}',
-                    'td#connection-status': connection_status_string(result['connected_link_new'], result['worker_h1'], result['worker_h2']),
                     'td#browser-proxy-setting': test_http_proxy_setting(),
                     'td#ca-status': ca_status_str,
-                    'td#scan-ip-thread-num': result['scan_ip_thread_num'],
-                    'td#ip-quality': result['ip_quality'],
                     'td#block-stat': result['block_stat']
                 };
                 for (var item in updates) {
@@ -383,22 +369,13 @@
             }
         });
     }
-    function appid_string(appid){
-        if (is_public_appid(appid)){
-            return '{{ _( "You are using public AppIDs." ) }}';
-        }else{
-            return appid;
-        }
-    }
+
     function is_public_appid(appids){
         if ( appids.length > 1 ){
             return false;
         } else {
             return true;
         }
-    }
-    function connection_status_string(connected_link_new, worker_h1, worker_h2){
-        return conn_str = '{{ _( "new:" ) }}' + connected_link_new + ' ' + '{{ _( "h1:" ) }}'+ worker_h1 + ' ' + '{{ _( "h2:" ) }}'+ worker_h2;
     }
 
     function test_http_proxy_setting() {
@@ -413,11 +390,7 @@
             timeout: 1000,
             url: 'http://www.twitter.com/xxnet',
             success: function(result) {
-                if ( result == "OK" ){
-                    window.http_proxy_setting = "OK";
-                }else{
-                    window.http_proxy_setting = "Fail";
-                }
+                window.http_proxy_setting = result == "OK" ? "OK" : "Fail";
             },
             error: function(result, textStatus, errorThrown) {
                 window.http_proxy_setting = "Fail";
@@ -429,7 +402,6 @@
         }
         return "Detecting";
     }
-
     function test_https_proxy_setting() {
         if (window.https_proxy_setting === "OK") {
             return "OK";
@@ -442,11 +414,7 @@
             timeout: 1000,
             url: 'https://www.twitter.com/xxnet',
             success: function(result) {
-                if ( result == "OK" ){
-                    window.https_proxy_setting = "OK";
-                }else{
-                    window.https_proxy_setting = "Fail";
-                }
+                window.https_proxy_setting = result == "OK" ? "OK" : "Fail";
             },
             error: function(result, textStatus, errorThrown) {
                 window.https_proxy_setting = "Fail";
@@ -512,22 +480,37 @@
                     $( "#show-detail").prop('checked', false);
                     $( "#details" ).slideUp();
                 }
-                updateProperty('td#system-proxy', result['system-proxy']);
+
+                switch(result['system-proxy']) {
+                    case "pac": updateProperty('td#system-proxy', '{{ _( "Global PAC Proxy set" ) }}');
+                    case "gae": updateProperty('td#system-proxy', '{{ _( "Global GAEProxy Proxy set" ) }}');
+                    case "x_tunnel": updateProperty('td#system-proxy', '{{ _( "Global X-Tunnel Proxy set" ) }}');
+                    case "smart_router": updateProperty('td#system-proxy', '{{ _( "Global Smart-Router Proxy set" ) }}');
+                    case "disable": updateProperty('td#system-proxy', '{{ _( "Global Proxy disabled" ) }}');
+                    default:
+                }
                 if ( result['gae_proxy_enable'] ) {
                     updateProperty('td#gaeproxy-status', '@127.0.0.1:8087'); //proxy_url
                 }else{
-                    updateProperty('td#gaeproxy-status', "disable");
+                    updateProperty('td#gaeproxy-status', '{{ _( "disable" ) }}');
                 }
                 if ( result['x_tunnel_enable'] ) {
                     updateProperty('td#xtunnel-status', '@127.0.0.1:1080'); //proxy_url
                 }else{
-                    updateProperty('td#xtunnel-status', "disable");
+                    updateProperty('td#xtunnel-status', '{{ _( "disable" ) }}');
                 }
                 if ( result['smart_router_enable'] ) {
                     updateProperty('td#smartrouter-status', '@127.0.0.1:8086'); //proxy_url
                 }else{
-                    updateProperty('td#smartrouter-status', "disable");
+                    updateProperty('td#smartrouter-status', '{{ _( "disable" ) }}');
                 }
+                /*
+                if ( result['lan_proxy']!=='disable' ) {
+                    updateProperty('td#lan-proxy', result['lan_proxy']); //proxy_url
+                }else{
+                    updateProperty('td#lan-proxy', '{{ _( "disable" ) }}');
+                }
+                */
             }
         });
     }
