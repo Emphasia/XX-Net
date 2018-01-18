@@ -18,32 +18,8 @@
         </thead>
         <tbody>
             <tr>
-                <td>{{ _( "IPv4 Status" ) }}</td>
-                <td id="ipv4-status"></td>
-            </tr>
-            <tr>
-                <td>{{ _( "IPv6 Status" ) }}</td>
-                <td id="ipv6-status"></td>
-            </tr>
-            <tr>
-                <td>{{ _( "IPv4 Number" ) }}</td>
-                <td id="ipv4-num"></td>
-            </tr>
-            <tr>
-                <td>{{ _( "IPv6 Number" ) }}</td>
-                <td id="ipv6-num"></td>
-            </tr>
-            <tr>
                 <td>{{ _( "XX-Net Status" ) }}</td>
                 <td id="is-idle"></td>
-            </tr>
-            <tr>
-                <td>{{ _( "IP Quality" ) }}</td>
-                <td id="ip-quality"></td>
-            </tr>
-            <tr>
-                <td>{{ _( "Connection Pool" ) }}(<a href="https://github.com/XX-net/XX-Net/wiki/GoAgent-Connection-status" target="_blank">{{ _( "Help" ) }}</a>)</td>
-                <td id="connection-status"></td>
             </tr>
             <tr>
                 <td>{{ _( "Browser Proxy Setting" ) }}</td>
@@ -54,18 +30,18 @@
                 <td id="ca-status"></td>
             </tr>
             <tr>
-                <td>{{ _( "Number of IP-Scanning Threads" ) }}(<a href="/?module=gae_proxy&menu=advanced#scan_ip">{{ _( "Settings" ) }}</a>)</td>
-                <td id="scan-ip-thread-num"></td>
-            </tr>
-            <tr>
                 <td>{{ _( "Block Status" ) }}(<a href="https://github.com/XX-net/XX-Net/wiki/GoAgent-Blocked" target="_blank">{{ _( "Help" ) }}</a>)</td>
                 <td id="block-stat"></td>
+            </tr>
+            <tr>
+                <td>{{ _( "System Proxy" ) }}</td>
+                <td id="system-proxy"></td>
             </tr>
         </tbody>
     </table>
 
-    <h4>{{ _( "Configuration" ) }}</h4>
-    <table id="setting" class="table table-bordered table-striped">
+    <h4>{{ _( "Modules" ) }}</h4>
+    <table id="modules" class="table table-bordered table-striped">
         <thead>
             <tr>
                 <th width="25%">{{ _( "Property" ) }}</th>
@@ -73,45 +49,21 @@
             </tr>
         </thead>
         <tbody>
-            <tr hidden>
-                <td>{{ _( "System Proxy Status" ) }}</td>
-                <td id="proxy-status"></td>
+            <tr>
+                <td>{{ _( "GAE Proxy" ) }}</td>
+                <td id="gaeproxy-status"></td>
             </tr>
             <tr>
-                <td>{{ _( "Listening At" ) }}</td>
-                <td id="proxy-listen"></td>
+                <td>{{ _( "X-Tunnel" ) }}</td>
+                <td id="xtunnel-status"></td>
             </tr>
             <tr>
-                <td>{{ _( "USE IPv6" ) }}</td>
-                <td id="use-ipv6"></td>
+                <td>{{ _( "Smart Router" ) }}</td>
+                <td id="smartrouter-status"></td>
             </tr>
             <tr>
                 <td>{{ _( "LAN proxy" ) }}</td>
                 <td id="lan-proxy"></td>
-            </tr>
-        </tbody>
-    </table>
-
-    <h4>AppID</h4>
-    <table id="appids" class="table table-bordered table-striped">
-        <thead>
-            <tr>
-                <th width="25%">{{ _( "Property" ) }}</th>
-                <th width="75%">{{ _( "Value" ) }}</th>
-            </tr>
-        </thead>
-        <tbody>
-            <tr id="hidden-appids">
-                <td>{{ _( "working AppIDs" ) }}</td>
-                <td id="working-appid"></td>
-            </tr>
-            <tr id="tr-out-of-quota-appids" hidden="true">
-                <td>{{ _( "out-of-quota AppIDs" ) }}</td>
-                <td id="out-of-quota-appids"></td>
-            </tr>
-            <tr id="tr-not-exist-appids" hidden="true">
-                <td>{{ _( "not-exist AppIDs" ) }}</td>
-                <td id="not-exist-appids"></td>
             </tr>
         </tbody>
     </table>
@@ -203,7 +155,7 @@
 
 <!-- JavaScript -->
 <script type="text/javascript">
-    title('{{ _( "GAE Proxy Status Info" ) }}');
+    title('{{ _( "XX-Net Status Info" ) }}');
 </script>
 <script type="text/javascript">
     function OneKeyReport(){
@@ -289,6 +241,7 @@
             $(selector).attr("class",attrclass);
         }
     }
+
     function updateDetailStatus() {
         $.ajax({
             type: 'GET',
@@ -337,18 +290,6 @@
                     updateProperty(item, updates[item]);
                 }
 
-                if (result['out_of_quota_appids'] === ""){
-                    $('#tr-out-of-quota-appids').hide();
-                }else{
-                    $('#tr-out-of-quota-appids').show();
-                }
-
-                if (result['not_exist_appids'] === ""){
-                    $('#tr-not-exist-appids').hide();
-                }else{
-                    $('#tr-not-exist-appids').show();
-                }
-
                 if ( !tipHasClose() ) {
                     tipClose();
                 }
@@ -363,12 +304,11 @@
                 }
 
                 if ( formValue == '' ) {
-                    tip('{{ _("The status page is empty. Highly likely that ")}}{{ _("GAEProxy")}}{{ _(" failed getting started. Please follow ")}}<a href="https://github.com/XX-net/XX-Net/wiki/How-to-get-start-error-log" target="_blank">{{ _("guide")}}</a>{{ _(" to troubleshoot.")}}<br>', 'warning', false);
+                    tip('{{ _("The status page is empty. Highly likely that ")}}{{ _("XX-Net")}}{{ _(" failed getting started. Please follow ")}}<a href="https://github.com/XX-net/XX-Net/wiki/How-to-get-start-error-log" target="_blank">{{ _("guide")}}</a>{{ _(" to troubleshoot.")}}<br>', 'warning', false);
                 }
             }
         });
     }
-
 
     function updateNoobStatus() {
         $.ajax({
@@ -481,7 +421,7 @@
             },
             error: function(result, textStatus, errorThrown) {
                 window.http_proxy_setting = "Fail";
-            },
+            }
         });
 
         if (window.http_proxy_setting === "Fail") {
@@ -510,7 +450,7 @@
             },
             error: function(result, textStatus, errorThrown) {
                 window.https_proxy_setting = "Fail";
-            },
+            }
         });
 
         if (window.https_proxy_setting === "Fail") {
@@ -571,6 +511,22 @@
                     $( "#show-detail").parent().removeClass('switch-on');
                     $( "#show-detail").prop('checked', false);
                     $( "#details" ).slideUp();
+                }
+                updateProperty('td#system-proxy', result['system-proxy']);
+                if ( result['gae_proxy_enable'] ) {
+                    updateProperty('td#gaeproxy-status', '@127.0.0.1:8087'); //proxy_url
+                }else{
+                    updateProperty('td#gaeproxy-status', "disable");
+                }
+                if ( result['x_tunnel_enable'] ) {
+                    updateProperty('td#xtunnel-status', '@127.0.0.1:1080'); //proxy_url
+                }else{
+                    updateProperty('td#xtunnel-status', "disable");
+                }
+                if ( result['smart_router_enable'] ) {
+                    updateProperty('td#smartrouter-status', '@127.0.0.1:8086'); //proxy_url
+                }else{
+                    updateProperty('td#smartrouter-status', "disable");
                 }
             }
         });
