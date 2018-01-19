@@ -8,6 +8,25 @@
 <div id="noob-info" class=""></div>
 
 <div id="details" hidden>
+
+    <div id="search">
+        <h4>{{ _( "Search" ) }}</h4>
+        <form accept-charset="UTF-8" action="https://github.com/XX-net/XX-Net/issues" class="subnav-search float-left" data-pjax="true" method="get" target="_blank">
+            <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
+            <input aria-label='{{ _( "Search all issues" ) }}' class="form-control form-control subnav-search-input input-contrast" data-hotkey="/" id="issues-search" name="q" placeholder='{{ _( "Search all issues" ) }}' type="text"> <!-- value="is:issue is:open " -->
+            <!--<svg aria-hidden="true" class="octicon octicon-search subnav-search-icon" height="16" width="16" version="1.1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg>-->
+        </form>
+        <br />
+    </div> <!-- #search -->
+
+    <div id="faq">
+        <h4>{{ _( "FAQ" ) }}</h4>
+        <div id="faq-content"></div>
+        <!--<iframe src="https://azu.github.io/github-issue-widget/?owner=xx-net&repo=XX-Net&limit=10&labels=分类_功能"
+                allowtransparency="true" frameborder="0" scrolling="true" width="100%" id="board"></iframe> &lt;!&ndash; +td#xxnet-version. &ndash;&gt;-->
+        <br />
+    </div> <!-- #faq -->
+
     <h4>{{ _( "Status" ) }}</h4>
     <table id="status" class="table table-bordered table-striped">
         <thead>
@@ -221,6 +240,7 @@
 
         updateDetailStatus();
         updateNoobStatus();
+        updateFAQ();
         getConfig();
     });
 
@@ -511,6 +531,34 @@
                     updateProperty('td#lan-proxy', '{{ _( "disable" ) }}');
                 }
                 */
+            }
+        });
+    }
+</script>
+<script type="text/javascript">
+    "use strict";
+    function updateFAQ() {
+        var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "labels=分类_功能"//FAQ,"+'td#xxnet-version';
+        $.ajax({
+            type: 'GET',
+            url: APIurl,
+            dataType: 'JSON',
+            success: function(result) {
+                var content = document.getElementById('faq-content');
+                var ul = document.createElement('ul');
+                var setLimit = 10;
+                for (var i = 0; i < Math.min(setLimit, result.length); i++) {
+                    var issue = result[i];
+                    var li = document.createElement('li');
+                    var a = document.createElement('a');
+                    a.href = issue.html_url;
+                    a.textContent = issue.title;
+                    a.setAttribute('target', '_blank');
+                    li.appendChild(a);
+                    ul.appendChild(li);
+                }
+                //content.empty();
+                content.appendChild(ul);
             }
         });
     }
