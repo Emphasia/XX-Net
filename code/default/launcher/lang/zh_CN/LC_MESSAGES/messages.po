@@ -281,6 +281,12 @@ msgstr "您的浏览器版本过低, 部分功能将无法使用。"
 msgid "The latest Chrome browser is recommended."
 msgstr "建议您使用最新版本的Chrome浏览器。"
 
+msgid "Search"
+msgstr "搜索"
+
+msgid "Notice"
+msgstr "公告"
+
 msgid "Property"
 msgstr "属性"
 
@@ -313,6 +319,9 @@ msgstr "系统代理"
 
 msgid "Modules"
 msgstr "模块"
+
+msgid "Launcher Web UI"
+msgstr "Web 控制页"
 
 msgid "LAN proxy"
 msgstr "局域网代理"
