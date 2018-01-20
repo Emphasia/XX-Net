@@ -19,13 +19,11 @@
         <br />
     </div> <!-- #search -->
 
-    <div id="faq">
-        <h4>{{ _( "FAQ" ) }}</h4>
-        <div id="faq-content"></div>
-        <!--<iframe src="https://azu.github.io/github-issue-widget/?owner=xx-net&repo=XX-Net&limit=10&labels=分类_功能"
-                allowtransparency="true" frameborder="0" scrolling="true" width="100%" id="board"></iframe> &lt;!&ndash; +td#xxnet-version. &ndash;&gt;-->
+    <div id="notice">
+        <h4>{{ _( "Notice" ) }}</h4>
+        <div id="notice-content"></div>
         <br />
-    </div> <!-- #faq -->
+    </div> <!-- #notice -->
 
     <h4>{{ _( "Status" ) }}</h4>
     <table id="status" class="table table-bordered table-striped">
@@ -240,7 +238,7 @@
 
         updateDetailStatus();
         updateNoobStatus();
-        updateFAQ();
+        updateNotice();
         getConfig();
     });
 
@@ -536,15 +534,14 @@
     }
 </script>
 <script type="text/javascript">
-    "use strict";
-    function updateFAQ() {
-        var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "labels=分类_功能"//FAQ,"+'td#xxnet-version';
+    function updateNotice() {
+        var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "labels="+"公告"+','+'td#xxnet-version';
         $.ajax({
             type: 'GET',
             url: APIurl,
             dataType: 'JSON',
             success: function(result) {
-                var content = document.getElementById('faq-content');
+                var content = document.getElementById('notice-content');
                 var ul = document.createElement('ul');
                 var setLimit = 10;
                 for (var i = 0; i < Math.min(setLimit, result.length); i++) {
@@ -559,6 +556,9 @@
                 }
                 //content.empty();
                 content.appendChild(ul);
+            },
+            error: function(result) {
+                updateProperty('#noob-info', '{{ _("Failed loading notice.")}}', 'none');
             }
         });
     }

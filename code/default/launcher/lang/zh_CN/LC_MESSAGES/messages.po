@@ -437,3 +437,6 @@ msgstr "全局代理禁用"
 msgid "disable"
 msgstr "禁用"
 
+msgid "Failed loading notice."
+msgstr "获取公告失败。"
+
