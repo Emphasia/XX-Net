@@ -13,15 +13,16 @@
         <h4>{{ _( "Search" ) }}</h4>
         <form accept-charset="UTF-8" action="https://github.com/XX-net/XX-Net/issues" class="subnav-search float-left" data-pjax="true" method="get" target="_blank">
             <div style="margin:0;padding:0;display:inline"><input name="utf8" type="hidden" value="✓"></div>
-            <input aria-label='{{ _( "Search all issues" ) }}' class="form-control form-control subnav-search-input input-contrast" data-hotkey="/" id="issues-search" name="q" placeholder='{{ _( "Search all issues" ) }}' type="text"> <!-- value="is:issue is:open " -->
-            <!--<svg aria-hidden="true" class="octicon octicon-search subnav-search-icon" height="16" width="16" version="1.1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg>-->
+            <input id="issues-search" name="q" placeholder='{{ _( "Search all issues" ) }}' type="text"> <!-- value="is:issue is:open " -->
+            <!--<svg style="margin:0;padding:0;display:inline-block" height="16" width="16" version="1.1" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M15.7 13.3l-3.81-3.83A5.93 5.93 0 0 0 13 6c0-3.31-2.69-6-6-6S1 2.69 1 6s2.69 6 6 6c1.3 0 2.48-.41 3.47-1.11l3.83 3.81c.19.2.45.3.7.3.25 0 .52-.09.7-.3a.996.996 0 0 0 0-1.41v.01zM7 10.7c-2.59 0-4.7-2.11-4.7-4.7 0-2.59 2.11-4.7 4.7-4.7 2.59 0 4.7 2.11 4.7 4.7 0 2.59-2.11 4.7-4.7 4.7z"/></svg>-->
         </form>
         <br />
     </div> <!-- #search -->
 
     <div id="notice">
         <h4>{{ _( "Notice" ) }}</h4>
-        <div id="notice-content"></div>
+        <ul id="notice-content" style="overflow:auto; width:auto; height:auto; max-height:200px; list-style-type:circle"></ul>
+        <!--<svg height="16" version="1.1" viewBox="0 0 14 16" width="14"><path fill-rule="evenodd" d="M7 2.3c3.14 0 5.7 2.56 5.7 5.7s-2.56 5.7-5.7 5.7A5.71 5.71 0 0 1 1.3 8c0-3.14 2.56-5.7 5.7-5.7zM7 1C3.14 1 0 4.14 0 8s3.14 7 7 7 7-3.14 7-7-3.14-7-7-7zm1 3H6v5h2V4zm0 6H6v2h2v-2z"></path></svg>-->
         <br />
     </div> <!-- #notice -->
 
@@ -66,6 +67,10 @@
             </tr>
         </thead>
         <tbody>
+            <tr>
+                <td>{{ _( "Launcher Web UI" ) }}</td>
+                <td id="launcher"></td>
+            </tr>
             <tr>
                 <td>{{ _( "GAE Proxy" ) }}</td>
                 <td id="gaeproxy-status"></td>
@@ -149,10 +154,10 @@
 
 <!-- Toggle #details-->
 <div class="row-fluid">
-    <div class="span3 bold">{{ _( "Show Details" ) }}</div> <!-- .span4 -->
+    <div class="span3 bold">{{ _( "Show Details" ) }}</div>
     <div class="span9">
         <input id="show-detail" type="checkbox" />
-    </div> <!-- .span8 -->
+    </div>
 </div>
 
 <div id="report-issue-modal" class="modal hide fade">
@@ -163,7 +168,7 @@
     <div class="modal-body">
         <p> * {{ _( "Post to Github issue needs to sign in your Github account" ) }}</p>
         <textarea id="DiagInfo" onmouseover="this.focus();this.select()"></textarea>
-    </div>
+    </div> <!-- .modal-body -->
     <div class="modal-footer">
     </div> <!-- .modal-footer -->
 </div> <!-- #report-issue-modal -->
@@ -221,6 +226,11 @@
             }
           })
     }
+
+    $("#pop-up-report").click(function(){
+        OneKeyReport();
+        $('#report-issue-modal').modal();
+    });
 </script>
 <script type="text/javascript">
     documentReadyToRun.push(function(){
@@ -241,16 +251,11 @@
         updateNotice();
         getConfig();
     });
-
-    $("#pop-up-report").click(function(){
-        OneKeyReport();
-        $('#report-issue-modal').modal();
-    });
 </script>
 <script type="text/javascript">
     function updateProperty(selector, content, attrclass) {
         var previousContent = $(selector).html();
-        if (String(previousContent) != String(content)) {
+        if (String(previousContent) !== String(content)) {
             $(selector).html(content);
         }
         if (attrclass) {
@@ -264,12 +269,6 @@
             url: '/module/gae_proxy/control/status',
             dataType: 'JSON',
             success: function(result) {
-                if ( test_http_proxy_setting() == "OK"){
-                    var ca_status_str = test_https_proxy_setting();
-                }else{
-                    var ca_status_str = "Fail";
-                }
-
                 var updates = {
                     'td#sys-platform': result['sys_platform'],
                     'td#os-system': result['os_system'],
@@ -287,7 +286,7 @@
 
                     'td#is-idle': result['is_idle'] ? '{{ _( "idle" ) }}' : '{{ _( "working" ) }}',
                     'td#browser-proxy-setting': test_http_proxy_setting(),
-                    'td#ca-status': ca_status_str,
+                    'td#ca-status': ( test_http_proxy_setting() === "OK") ? test_https_proxy_setting() : "Fail",
                     'td#block-stat': result['block_stat']
                 };
                 for (var item in updates) {
@@ -382,18 +381,14 @@
                 if ( infoValue == '' ) {
                     tip('{{ _("The status page is empty. Highly likely that ")}}{{ _("XX-Net")}}{{ _(" failed getting started. Please follow ")}}<a href="https://github.com/XX-net/XX-Net/wiki/How-to-get-start-error-log" target="_blank">{{ _("guide")}}</a>{{ _(" to troubleshoot.")}}<br>', 'warning', false);
                 } else {
-                    updateProperty('#noob-info', '{{ _("No response from process: ")}}{{ _("GAEProxy")}}{{ _(". It might have already exited.")}}', 'none');
+                    updateProperty('#noob-info', '{{ _("No response from process: ")}}{{ _("XX-Net")}}{{ _(". It might have already exited.")}}', 'none');
                 }
             }
         });
     }
 
     function is_public_appid(appids){
-        if ( appids.length > 1 ){
-            return false;
-        } else {
-            return true;
-        }
+        return appids.length <= 1;
     }
 
     function test_http_proxy_setting() {
@@ -408,7 +403,7 @@
             timeout: 1000,
             url: 'http://www.twitter.com/xxnet',
             success: function(result) {
-                window.http_proxy_setting = result == "OK" ? "OK" : "Fail";
+                window.http_proxy_setting = result === "OK" ? "OK" : "Fail";
             },
             error: function(result, textStatus, errorThrown) {
                 window.http_proxy_setting = "Fail";
@@ -487,7 +482,7 @@
             data: pageRequests,
             dataType: 'JSON',
             success: function(result) {
-                if ( result['show_detail'] != 0 ) {
+                if ( result['show_detail'] !== 0 ) {
                     $( "#show-detail").parent().removeClass('switch-off');
                     $( "#show-detail").parent().addClass('switch-on');
                     $( "#show-detail").prop('checked', true);
@@ -500,65 +495,82 @@
                 }
 
                 switch(result['system-proxy']) {
-                    case "pac": updateProperty('td#system-proxy', '{{ _( "Global PAC Proxy set" ) }}');
-                    case "gae": updateProperty('td#system-proxy', '{{ _( "Global GAEProxy Proxy set" ) }}');
-                    case "x_tunnel": updateProperty('td#system-proxy', '{{ _( "Global X-Tunnel Proxy set" ) }}');
-                    case "smart_router": updateProperty('td#system-proxy', '{{ _( "Global Smart-Router Proxy set" ) }}');
-                    case "disable": updateProperty('td#system-proxy', '{{ _( "Global Proxy disabled" ) }}');
+                    case "pac": updateProperty('td#system-proxy', '{{ _( "Global PAC Proxy set" ) }}'); break;
+                    case "gae": updateProperty('td#system-proxy', '{{ _( "Global GAEProxy Proxy set" ) }}'); break;
+                    case "x_tunnel": updateProperty('td#system-proxy', '{{ _( "Global X-Tunnel Proxy set" ) }}'); break;
+                    case "smart_router": updateProperty('td#system-proxy', '{{ _( "Global Smart-Router Proxy set" ) }}'); break;
+                    case "disable": updateProperty('td#system-proxy', '{{ _( "Global Proxy disabled" ) }}'); break;
                     default:
                 }
-                if ( result['gae_proxy_enable'] ) {
+                updateProperty('td#launcher', '@127.0.0.1:8085');
+                if (result['gae_proxy_enable']) {
                     updateProperty('td#gaeproxy-status', '@127.0.0.1:8087'); //proxy_url
-                }else{
+                } else {
                     updateProperty('td#gaeproxy-status', '{{ _( "disable" ) }}');
                 }
-                if ( result['x_tunnel_enable'] ) {
+                if (result['x_tunnel_enable']) {
                     updateProperty('td#xtunnel-status', '@127.0.0.1:1080'); //proxy_url
-                }else{
+                } else {
                     updateProperty('td#xtunnel-status', '{{ _( "disable" ) }}');
                 }
-                if ( result['smart_router_enable'] ) {
+                if (result['smart_router_enable']) {
                     updateProperty('td#smartrouter-status', '@127.0.0.1:8086'); //proxy_url
-                }else{
+                } else {
                     updateProperty('td#smartrouter-status', '{{ _( "disable" ) }}');
                 }
                 /*
-                if ( result['lan_proxy']!=='disable' ) {
+                if (result['lan_proxy'] !== 'disable') {
                     updateProperty('td#lan-proxy', result['lan_proxy']); //proxy_url
-                }else{
+                } else {
                     updateProperty('td#lan-proxy', '{{ _( "disable" ) }}');
                 }
                 */
             }
         });
     }
-</script>
-<script type="text/javascript">
+
     function updateNotice() {
-        var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "labels="+"公告"+','+'td#xxnet-version';
+        var pageRequests = {
+            'cmd': 'get_version'
+        };
         $.ajax({
             type: 'GET',
-            url: APIurl,
+            url: '/config',
+            data: pageRequests,
             dataType: 'JSON',
-            success: function(result) {
-                var content = document.getElementById('notice-content');
-                var ul = document.createElement('ul');
-                var setLimit = 10;
-                for (var i = 0; i < Math.min(setLimit, result.length); i++) {
-                    var issue = result[i];
-                    var li = document.createElement('li');
-                    var a = document.createElement('a');
-                    a.href = issue.html_url;
-                    a.textContent = issue.title;
-                    a.setAttribute('target', '_blank');
-                    li.appendChild(a);
-                    ul.appendChild(li);
-                }
-                //content.empty();
-                content.appendChild(ul);
+            success: function (result) {
+                var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "no:label";
+                //var APIurl = "https://api.github.com/repos/xx-net/XX-Net/issues?" + "labels=" + "公告" + ',' + result['current_version'];
+
+                $.ajax({
+                    type: 'GET',
+                    url: APIurl,
+                    dataType: 'JSON',
+                    success: function (result) {
+                        var content = document.getElementById('notice-content');
+                        var ul = document.createElement('ul');
+                        var limit = 30;
+                        for (var i = 0; i < Math.min(limit, result.length); i++) {
+                            var issue = result[i];
+                            var li = document.createElement('li');
+                            var a = document.createElement('a');
+                            a.href = issue.html_url;
+                            a.textContent = issue.title;
+                            a.setAttribute('target', '_blank');
+                            li.appendChild(a);
+                            //ul.appendChild(li);
+                            content.appendChild(li);
+                        }
+                        //content.empty();
+                        //content.appendChild(ul);
+                    },
+                    error: function (result) {
+                        tip('{{ _( "Failed loading notice." ) }}', 'error');
+                    }
+                });
             },
-            error: function(result) {
-                updateProperty('#noob-info', '{{ _("Failed loading notice.")}}', 'none');
+            error: function (result) {
+                tip('{{ _( "Failed loading notice." ) }}', 'error');
             }
         });
     }
